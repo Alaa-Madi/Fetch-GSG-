@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quote Search</title>
+</head>
+<body>
+  <h1>Quote Search</h1>
+  <input type="text" id="searchInput" placeholder="Enter search keyword">
+  <ul id="quoteList"></ul>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var searchInput = document.getElementById("searchInput");
+      var quoteList = document.getElementById("quoteList");
+
+      // Fetch quote data from API
+      fetchQuotes()
+        .then(function(data) {
+          displayQuotes(data);
+        })
+        .catch(function(error) {
+          displayError();
+        });
+
+      // Handle search input changes
+      searchInput.addEventListener("input", function() {
+        var searchTerm = searchInput.value.trim().toLowerCase();
+        filterQuotes(searchTerm);
+      });
+
+      // Fetch quote data from API
+      function fetchQuotes() {
+        return fetch("https://dummyjson.com/quotes")
+          .then(function(response) {
+            if (!response.ok) {
+              throw new Error("Failed to fetch quotes.");
+            }
+            return response.json();
+          });
+      }
+
+      // Display quotes on the page
+      function displayQuotes(data) {
+        quoteList.innerHTML = "";
+        data.forEach(function(quote) {
+          var quoteText = quote.text;
+          var listItem = document.createElement("li");
+          listItem.textContent = quoteText;
+          quoteList.appendChild(listItem);
+        });
+      }
+
+      // Filter quotes based on search term
+      function filterQuotes(searchTerm) {
+        var quotes = quoteList.getElementsByTagName("li");
+        Array.from(quotes).forEach(function(quote) {
+          var quoteText = quote.textContent.toLowerCase();
+          if (quoteText.includes(searchTerm)) {
+            quote.style.display = "list-item";
+          } else {
+            quote.style.display = "none";
+          }
+        });
+      }
+
+      // Display error message
+      function displayError() {
+        quoteList.innerHTML = "";
+        var errorMessage = document.createElement("li");
+        errorMessage.textContent = "Error occurred while fetching quotes. Please try again later.";
+        quoteList.appendChild(errorMessage);
+      }
+    });
+  </script>
+</body>
+</html>
